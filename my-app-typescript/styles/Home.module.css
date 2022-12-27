@@ -67,7 +67,7 @@
 .proposalCard {
   width: fit-content;
   margin-top: 0.25rem;
-  border: grey 2px solid;
+  border: turquoise 2px solid;
   margin: 10px 0px;
   padding: 10px;
   flex: 1;
