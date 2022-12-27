@@ -146,7 +146,7 @@ export default function Home() {
       setLoading(false);
     } catch (error) {
       console.error(error);
-      window.alert(error);
+      window.alert(error.error.message);
     }
   };
 
@@ -206,7 +206,7 @@ export default function Home() {
       await fetchAllProposals();
     } catch (error) {
       console.error(error);
-      window.alert(error);
+      window.alert(error.error.message);
     }
   };
 
@@ -224,7 +224,7 @@ export default function Home() {
       getDAOTreasuryBalance();
     } catch (error) {
       console.error(error);
-      window.alert(error);
+      window.alert(error.error.message);
     }
   };
 
@@ -360,12 +360,6 @@ export default function Home() {
         <div>
           {proposals?.map((p, index) => (
             <div key={index} className={styles.proposalCard}>
-              <p>Proposal ID: {p.proposalId}</p>
-              <p>Fake NFT to Purchase: {p.nftTokenId}</p>
-              <p>Deadline: {p.deadline.toLocaleString()}</p>
-              <p>Yes Votes: {p.yesVotes}</p>
-              <p>No Votes: {p.noVotes}</p>
-              <p>Executed?: {p.executed.toString()}</p>
               {p.deadline.getTime() > Date.now() && !p.executed ? (
                 <div className={styles.flex}>
                   <button
@@ -391,8 +385,16 @@ export default function Home() {
                   </button>
                 </div>
               ) : (
-                <div className={styles.description}>Proposal Executed</div>
+                <div className={styles.proposalOutcome}>
+                  Proposal {p.proposalId} Executed
+                </div>
               )}
+              {!p.executed && <p>Proposal ID: {p.proposalId}</p>}
+              <p>Fake NFT to Purchase: {p.nftTokenId}</p>
+              <p>Deadline: {p.deadline.toLocaleString()}</p>
+              <p>Yes Votes: {p.yesVotes}</p>
+              <p>No Votes: {p.noVotes}</p>
+              <p>Executed: {p.executed.toString()}</p>
             </div>
           ))}
         </div>

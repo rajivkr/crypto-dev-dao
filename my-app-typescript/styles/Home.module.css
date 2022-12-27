@@ -32,6 +32,13 @@
   font-size: 1.2rem;
 }
 
+.proposalOutcome {
+  line-height: 1;
+  margin: 1rem 0rem;
+  font-size: 1.2rem;
+  color: turquoise;
+}
+
 .button {
   border-radius: 4px;
   background-color: blue;
@@ -60,7 +67,9 @@
 .proposalCard {
   width: fit-content;
   margin-top: 0.25rem;
-  border: black 2px solid;
+  border: grey 2px solid;
+  margin: 10px 0px;
+  padding: 10px;
   flex: 1;
   flex-direction: column;
 }
