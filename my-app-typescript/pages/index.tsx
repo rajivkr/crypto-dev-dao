@@ -146,7 +146,7 @@ export default function Home() {
       setLoading(false);
     } catch (error) {
       console.error(error);
-      window.alert(error.error.message);
+      window.alert(error?.error?.message);
     }
   };
 
@@ -206,7 +206,7 @@ export default function Home() {
       await fetchAllProposals();
     } catch (error) {
       console.error(error);
-      window.alert(error.error.message);
+      window.alert(error?.error?.message);
     }
   };
 
@@ -224,7 +224,7 @@ export default function Home() {
       getDAOTreasuryBalance();
     } catch (error) {
       console.error(error);
-      window.alert(error.error.message);
+      window.alert(error?.error?.message);
     }
   };
 
