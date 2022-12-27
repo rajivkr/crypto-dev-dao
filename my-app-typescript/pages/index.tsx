@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { Contract, providers } from 'ethers';
+import { BigNumber, Contract, providers } from 'ethers';
 import { formatEther } from 'ethers/lib/utils';
 import Head from 'next/head';
 import { useEffect, useRef, useState } from 'react';
@@ -17,8 +17,8 @@ export type ProposalsDTO = {
   proposalId: number;
   nftTokenId: string;
   deadline: Date;
-  yayVotes: string;
-  nayVotes: string;
+  yesVotes: string;
+  noVotes: string;
   executed: boolean;
 };
 
@@ -26,7 +26,7 @@ export default function Home() {
   // ETH Balance of the DAO contract
   const [treasuryBalance, setTreasuryBalance] = useState('0');
   // Number of proposals created in the DAO
-  const [numProposals, setNumProposals] = useState(0);
+  const [numProposals, setNumProposals] = useState('0');
   // Array of all proposals created in the DAO
   const [proposals, setProposals] = useState<ProposalsDTO[]>([]);
   // User's balance of CryptoDevs NFTs
@@ -89,7 +89,7 @@ export default function Home() {
       await tx.wait();
       setLoading(false);
       getDAOTreasuryBalance();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       window.alert(err.message);
     }
@@ -114,7 +114,7 @@ export default function Home() {
       const provider = await getProviderOrSigner();
       const contract = getDaoContractInstance(provider);
       const daoNumProposals = await contract.numProposals();
-      setNumProposals(daoNumProposals);
+      setNumProposals(daoNumProposals.toString());
     } catch (error) {
       console.error(error);
     }
@@ -144,9 +144,9 @@ export default function Home() {
       await txn.wait();
       await getNumProposalsInDAO();
       setLoading(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      window.alert(error.data.message);
+      window.alert(error);
     }
   };
 
@@ -164,10 +164,11 @@ export default function Home() {
         proposalId: id,
         nftTokenId: proposal.nftTokenId.toString(),
         deadline: new Date(parseInt(proposal.deadline.toString()) * 1000),
-        yayVotes: proposal.yayVotes.toString(),
-        nayVotes: proposal.nayVotes.toString(),
+        yesVotes: proposal.yesVotes.toString(),
+        noVotes: proposal.noVotes.toString(),
         executed: proposal.executed,
       };
+      console.log(parsedProposal);
       return parsedProposal;
     } catch (error) {
       console.error(error);
@@ -179,9 +180,9 @@ export default function Home() {
   const fetchAllProposals = async () => {
     try {
       const proposals = [];
-      for (let i = 0; i < numProposals; i++) {
-        const proposal = (await fetchProposalById(i)) as ProposalsDTO;
-        proposals.push(proposal);
+      for (let i = 0; i < BigNumber.from(numProposals).toNumber(); i++) {
+        const proposal = await fetchProposalById(i);
+        if (proposal) proposals.push(proposal);
       }
       setProposals(proposals);
       return proposals;
@@ -197,15 +198,15 @@ export default function Home() {
       const signer = await getProviderOrSigner(true);
       const daoContract = getDaoContractInstance(signer);
 
-      let vote = _vote === 'YAY' ? 0 : 1;
+      let vote = _vote === 'YES' ? 0 : 1;
       const txn = await daoContract.voteOnProposal(proposalId, vote);
       setLoading(true);
       await txn.wait();
       setLoading(false);
       await fetchAllProposals();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      window.alert(error.data.message);
+      window.alert(error);
     }
   };
 
@@ -221,9 +222,9 @@ export default function Home() {
       setLoading(false);
       await fetchAllProposals();
       getDAOTreasuryBalance();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      window.alert(error.data.message);
+      window.alert(error);
     }
   };
 
@@ -357,27 +358,27 @@ export default function Home() {
     } else {
       return (
         <div>
-          {proposals.map((p, index) => (
+          {proposals?.map((p, index) => (
             <div key={index} className={styles.proposalCard}>
               <p>Proposal ID: {p.proposalId}</p>
               <p>Fake NFT to Purchase: {p.nftTokenId}</p>
               <p>Deadline: {p.deadline.toLocaleString()}</p>
-              <p>Yay Votes: {p.yayVotes}</p>
-              <p>Nay Votes: {p.nayVotes}</p>
+              <p>Yes Votes: {p.yesVotes}</p>
+              <p>No Votes: {p.noVotes}</p>
               <p>Executed?: {p.executed.toString()}</p>
               {p.deadline.getTime() > Date.now() && !p.executed ? (
                 <div className={styles.flex}>
                   <button
                     className={styles.button2}
-                    onClick={() => voteOnProposal(p.proposalId, 'YAY')}
+                    onClick={() => voteOnProposal(p.proposalId, 'YES')}
                   >
-                    Vote YAY
+                    Vote YES
                   </button>
                   <button
                     className={styles.button2}
-                    onClick={() => voteOnProposal(p.proposalId, 'NAY')}
+                    onClick={() => voteOnProposal(p.proposalId, 'NO')}
                   >
-                    Vote NAY
+                    Vote NO
                   </button>
                 </div>
               ) : p.deadline.getTime() < Date.now() && !p.executed ? (
@@ -386,8 +387,7 @@ export default function Home() {
                     className={styles.button2}
                     onClick={() => executeProposal(p.proposalId)}
                   >
-                    Execute Proposal{' '}
-                    {p.yayVotes > p.nayVotes ? '(YAY)' : '(NAY)'}
+                    Execute Proposal {p.yesVotes > p.noVotes ? '(YES)' : '(NO)'}
                   </button>
                 </div>
               ) : (
@@ -417,7 +417,7 @@ export default function Home() {
             <br />
             Treasury Balance: {formatEther(treasuryBalance)} ETH
             <br />
-            {/* Total Number of Proposals: {numProposals} */}
+            Total Number of Proposals: {numProposals}
           </div>
           <div className={styles.flex}>
             <button
