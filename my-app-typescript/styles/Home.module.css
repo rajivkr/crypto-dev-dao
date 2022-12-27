@@ -83,6 +83,12 @@
   justify-content: space-between;
 }
 
+.proposalButton {
+  margin-bottom: 1rem;
+  flex: 1;
+  justify-content: space-between;
+}
+
 @media (max-width: 1000px) {
   .main {
     width: 100%;

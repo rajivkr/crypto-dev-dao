@@ -361,7 +361,7 @@ export default function Home() {
           {proposals?.map((p, index) => (
             <div key={index} className={styles.proposalCard}>
               {p.deadline.getTime() > Date.now() && !p.executed ? (
-                <div className={styles.flex}>
+                <div className={styles.proposalButton}>
                   <button
                     className={styles.button2}
                     onClick={() => voteOnProposal(p.proposalId, 'YES')}
@@ -376,7 +376,7 @@ export default function Home() {
                   </button>
                 </div>
               ) : p.deadline.getTime() < Date.now() && !p.executed ? (
-                <div className={styles.flex}>
+                <div className={styles.proposalButton}>
                   <button
                     className={styles.button2}
                     onClick={() => executeProposal(p.proposalId)}
