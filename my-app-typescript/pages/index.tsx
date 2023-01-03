@@ -98,7 +98,7 @@ export default function Home() {
   // Reads the ETH balance of the DAO contract and sets the `treasuryBalance` state variable
   const getDAOTreasuryBalance = async () => {
     try {
-      const provider = await getProviderOrSigner();
+      const provider = (await getProviderOrSigner()) as providers.Web3Provider;
       const balance = await provider.getBalance(
         CRYPTODEVS_DAO_CONTRACT_ADDRESS
       );
@@ -111,7 +111,7 @@ export default function Home() {
   // Reads the number of proposals in the DAO contract and sets the `numProposals` state variable
   const getNumProposalsInDAO = async () => {
     try {
-      const provider = await getProviderOrSigner();
+      const provider = (await getProviderOrSigner()) as providers.Web3Provider;
       const contract = getDaoContractInstance(provider);
       const daoNumProposals = await contract.numProposals();
       setNumProposals(daoNumProposals.toString());
@@ -157,7 +157,7 @@ export default function Home() {
     id: number
   ): Promise<ProposalsDTO | undefined> => {
     try {
-      const provider = await getProviderOrSigner();
+      const provider = (await getProviderOrSigner()) as providers.Web3Provider;
       const daoContract = getDaoContractInstance(provider);
       const proposal = await daoContract.proposals(id);
       const parsedProposal: ProposalsDTO = {
