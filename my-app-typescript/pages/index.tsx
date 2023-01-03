@@ -58,17 +58,17 @@ export default function Home() {
    */
   const getDAOOwner = async () => {
     try {
-      const signer = await getProviderOrSigner(true);
+      const signer = (await getProviderOrSigner(
+        true
+      )) as providers.JsonRpcSigner;
       const contract = getDaoContractInstance(signer);
 
       // call the owner function from the contract
       const _owner = await contract.owner();
-      if (signer instanceof providers.JsonRpcSigner) {
-        // Get the address associated to signer which is connected to Metamask
-        const address = await signer.getAddress();
-        if (address.toLowerCase() === _owner.toLowerCase()) {
-          setIsOwner(true);
-        }
+      // Get the address associated to signer which is connected to Metamask
+      const address = await signer.getAddress();
+      if (address.toLowerCase() === _owner.toLowerCase()) {
+        setIsOwner(true);
       }
     } catch (err) {
       console.error(err);
@@ -123,12 +123,12 @@ export default function Home() {
   // Reads the balance of the user's CryptoDevs NFTs and sets the `nftBalance` state variable
   const getUserNFTBalance = async () => {
     try {
-      const signer = await getProviderOrSigner(true);
+      const signer = (await getProviderOrSigner(
+        true
+      )) as providers.JsonRpcSigner;
       const nftContract = getCryptodevsNFTContractInstance(signer);
-      if (signer instanceof providers.JsonRpcSigner) {
-        const balance = await nftContract.balanceOf(signer.getAddress());
-        setNftBalance(parseInt(balance.toString()));
-      }
+      const balance = await nftContract.balanceOf(signer.getAddress());
+      setNftBalance(parseInt(balance.toString()));
     } catch (error) {
       console.error(error);
     }
